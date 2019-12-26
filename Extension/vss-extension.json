@@ -1,0 +1,83 @@
+{
+  "manifestVersion": 1,
+  "id": "PesterRunner",
+  "version": "1.0.0",
+  "name": "Pester Test Runner",
+  "publisher": "pester",
+  "description": "Run Pester tests without the need to install Pester.",
+  "CustomerQnASupport": {
+    "enableqna":"true",
+    "url": "https://github.com/pester/AzureDevOpsExtension/issues"
+  }, 
+   "categories": [
+    "Azure Pipelines"
+  ],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "tags": [
+    "Release",
+    "Package",
+    "Publish",
+    "Test"
+  ],
+  "galleryFlags": [
+    "Public"
+  ],
+  "branding": {
+    "color": "#f97923",
+    "theme": "dark"
+  },
+  "icons": {
+    "default": "images/logo.png"
+  },
+  "links": {
+    "getstarted": {
+      "uri": "https://github.com/pester/AzureDevOpsExtension/wiki/Pester-Task"
+    },
+    "support": {
+      "uri": "https://github.com/pester/AzureDevOpsExtension/issues"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot1.png"
+    },
+    {
+      "path": "images/screenshot2.png"
+    },
+    {
+      "path": "images/screenshot3.png"
+    },
+    {
+      "path": "images/screenshot4.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "task"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "Pester-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "task"
+      }
+    }
+  ]
+}

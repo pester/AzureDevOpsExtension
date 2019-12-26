@@ -1,0 +1,82 @@
+pool:
+  name: Hosted VS2017
+  demands: npm
+
+steps:
+- task: qetza.replacetokens.replacetokens-task.replacetokens@1
+  displayName: 'Replace tokens in **\task.json'
+  inputs:
+    rootDirectory: './Extension'
+    targetFiles: '**\task.json'
+
+- task: Npm@0
+  displayName: 'npm install'
+  inputs:
+    cwd: './Extension'
+
+- task: Npm@0
+  displayName: 'npm run build'
+  inputs:
+    cwd: './Extension'
+    command: run
+    arguments: build
+
+- task: Npm@0
+  displayName: 'npm run test'
+  inputs:
+    cwd: './Extension'
+    command: run
+    arguments: test
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFiles: './Extension/test-output/test-results.xml'
+    testRunTitle: '$(TaskFolder)'
+
+- task: Npm@0
+  displayName: 'npm run package'
+  inputs:
+    cwd: './Extension'
+    command: run
+    arguments: package
+
+- task: pester.PesterRunner-DEV.Pester.Pester@1
+  displayName: 'Pester Test Runner'
+  inputs:
+    scriptFolder: '$(Build.SourcesDirectory)\Extensions\Test\*'
+    resultsFile: '$(Build.SourcesDirectory)\Test-Pester.XML'
+
+- task: PublishTestResults@1
+  displayName: 'Publish Test Results **/TEST-*.xml copy'
+  inputs:
+    testRunner: NUnit
+  condition: succeededOrFailed()
+
+- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+  displayName: 'Create Package - Public'
+  inputs:
+    rootFolder: './Extension'
+    outputPath: '$(Build.ArtifactStagingDirectory)\vsix'
+    publisherId: '$(PackageID)'
+    extensionId: '$(ExtensionID)'
+    extensionVersion: '$(Build.BuildNumber)'
+    updateTasksVersion: true
+    extensionVisibility: public
+
+- task: CopyFiles@2
+  displayName: 'Copy Docs'
+  inputs:
+    SourceFolder: ./Extensions
+    Contents: |
+     readme.md
+     vss-extension.json
+     **\task.json
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\vsix'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: vsix'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
+    ArtifactName: vsix
+
