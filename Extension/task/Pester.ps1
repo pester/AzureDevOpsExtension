@@ -24,7 +24,7 @@ param
     [String[]]$ExcludeTag,
 
     [validateScript( {
-            if ([string]::isNullOrWhitespace($_)) {
+            if ([string]::IsNullOrWhiteSpace($_)) {
                 $true
             }
             else {
@@ -40,6 +40,16 @@ param
 
     [string]$ScriptBlock
 )
+
+Write-Host "scriptFolder $scriptFolder"
+Write-Host "resultsFile $resultsFile"
+Write-Host "run32Bit $run32Bit"
+Write-Host "additionalModulePath $additionalModulePath"
+Write-Host "tag $Tag"
+Write-Host "ExcludeTag $ExcludeTag"
+Write-Host "CodeCoverageOutputFile $CodeCoverageOutputFile"
+Write-Host "CodeCoverageFolder $CodeCoverageFolder"
+Write-Host "ScriptBlock $ScriptBlock"
 
 Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
 

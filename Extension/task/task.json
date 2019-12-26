@@ -73,6 +73,15 @@
       "groupName": "tags"
     },
     {
+      "name": "usePSCore",
+      "type": "boolean",
+      "label": "Use PowerShell Core (Windows Only)",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "On a Windows agent, if set will run Pester tests with 'pwsh', if false will use 'PowerShell.exe'. On Non-Windows agents 'pwsh' always used",
+      "groupName": "advanced"
+    },
+    {
       "name": "additionalModulePath",
       "type": "string",
       "label": "Path to additional PowerShell modules",
@@ -96,8 +105,9 @@
       "label": "Run in 32bit",
       "defaultValue": "False",
       "required": true,
-      "helpMarkDown": "Run in 32bit",
-      "groupName": "advanced"
+      "helpMarkDown": "Run in 32bit, only applicable on Windows agents",
+      "groupName": "advanced",
+      "visibleRule": "usePSCore = False"
     },
     {
       "name": "ScriptBlock",
@@ -107,13 +117,12 @@
       "helpMarkDown": "A scriptblock to run before tests are executed. This will be run in the scope of the task where Invoke-Pester is run.",
       "groupName": "advanced"
     }
-  ],
+   ],
   "instanceNameFormat": "Pester Test Runner",
   "execution": {
-    "PowerShell": {
-      "target": "$(currentDirectory)\\Pester.ps1",
-      "argumentFormat": "",
-      "workingDirectory": "$(currentDirectory)"
+    "Node": {
+      "target": "pester.js",
+      "argumentFormat": ""
     }
   }
 }

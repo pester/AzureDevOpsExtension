@@ -1,16 +1,16 @@
 {
   "manifestVersion": 1,
-  "id": "BM-VSTS-PesterRunner-Task",
+  "id": "PesterRunner",
   "version": "1.0.0",
-  "name": "Pester Test Runner Build Task",
-  "publisher": "richardfennellBM",
-  "description": "Run Pester tests without the need to install Pester in with the PMModule folder or in the source repo (Using Pester 3.4.3 or 4.3.1).",
+  "name": "Pester Test Runner",
+  "publisher": "pester",
+  "description": "Run Pester tests without the need to install Pester.",
   "CustomerQnASupport": {
     "enableqna":"true",
-    "url": "https://github.com/rfennell/AzurePipelines/issues"
+    "url": "https://github.com/pester/AzureDevOpsExtension/issues"
   }, 
    "categories": [
-    "Build and release"
+    "Azure Pipelines"
   ],
   "targets": [
     {
@@ -20,7 +20,8 @@
   "tags": [
     "Release",
     "Package",
-    "Publish"
+    "Publish",
+    "Test"
   ],
   "galleryFlags": [
     "Public"
@@ -34,10 +35,10 @@
   },
   "links": {
     "getstarted": {
-      "uri": "https://github.com/rfennell/vNextBuild/wiki/Pester-Task"
+      "uri": "https://github.com/pester/AzureDevOpsExtension/wiki/Pester-Task"
     },
     "support": {
-      "uri": "https://github.com/rfennell/vNextBuild/issues"
+      "uri": "https://github.com/pester/AzureDevOpsExtension/issues"
     }
   },
   "screenshots": [
