@@ -1,82 +1,43 @@
-pool:
-  name: Hosted VS2017
-  demands: npm
+stages:
+  - stage: build
+    displayName: Build VSIX
+    jobs:
+      - job: Build
+        pool:
+          vmimage: ubuntu-latest
+        steps: 
+        - task: GitVersion@5
+          inputs:
+            runtime: 'core'
 
-steps:
-- task: qetza.replacetokens.replacetokens-task.replacetokens@1
-  displayName: 'Replace tokens in **\task.json'
-  inputs:
-    rootDirectory: './Extension'
-    targetFiles: '**\task.json'
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '10.x'
+          displayName: 'Install Node.js'
 
-- task: Npm@0
-  displayName: 'npm install'
-  inputs:
-    cwd: './Extension'
+        - script: |
+            npm install
+            npm run build
+          displayName: 'npm install and build'
+          workingDirectory: ./Extension
 
-- task: Npm@0
-  displayName: 'npm run build'
-  inputs:
-    cwd: './Extension'
-    command: run
-    arguments: build
+        - script: |
+            npm run package
+          workingDirectory: ./Extension
 
-- task: Npm@0
-  displayName: 'npm run test'
-  inputs:
-    cwd: './Extension'
-    command: run
-    arguments: test
+        - task: TfxInstaller@2
+          inputs:
+            version: 'v0.6.x'
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results'
-  inputs:
-    testResultsFiles: './Extension/test-output/test-results.xml'
-    testRunTitle: '$(TaskFolder)'
+        - task: PackageAzureDevOpsExtension@2
+          inputs:
+            rootFolder: './Extension'
+            outputPath: '$(Build.ArtifactStagingDirectory)/Pester.vsix'
+            updateTasksVersion: true
+            extensionVersion: $(GitVersion.MajorMinorPatch)
 
-- task: Npm@0
-  displayName: 'npm run package'
-  inputs:
-    cwd: './Extension'
-    command: run
-    arguments: package
-
-- task: pester.PesterRunner-DEV.Pester.Pester@1
-  displayName: 'Pester Test Runner'
-  inputs:
-    scriptFolder: '$(Build.SourcesDirectory)\Extensions\Test\*'
-    resultsFile: '$(Build.SourcesDirectory)\Test-Pester.XML'
-
-- task: PublishTestResults@1
-  displayName: 'Publish Test Results **/TEST-*.xml copy'
-  inputs:
-    testRunner: NUnit
-  condition: succeededOrFailed()
-
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-  displayName: 'Create Package - Public'
-  inputs:
-    rootFolder: './Extension'
-    outputPath: '$(Build.ArtifactStagingDirectory)\vsix'
-    publisherId: '$(PackageID)'
-    extensionId: '$(ExtensionID)'
-    extensionVersion: '$(Build.BuildNumber)'
-    updateTasksVersion: true
-    extensionVisibility: public
-
-- task: CopyFiles@2
-  displayName: 'Copy Docs'
-  inputs:
-    SourceFolder: ./Extensions
-    Contents: |
-     readme.md
-     vss-extension.json
-     **\task.json
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\vsix'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: vsix'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
-    ArtifactName: vsix
-
+        - task: PublishBuildArtifacts@1
+          displayName: 'Publish Artifact: vsix'
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: vsix
