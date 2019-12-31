@@ -2,7 +2,7 @@
 param
 (
     [Parameter(Mandatory)]
-    [string]$scriptFolder,
+    $scriptFolder,
 
     [Parameter(Mandatory)]
     [ValidateScript( {
