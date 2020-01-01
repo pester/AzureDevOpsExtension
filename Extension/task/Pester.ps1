@@ -2,7 +2,7 @@
 param
 (
     [Parameter(Mandatory)]
-    [string]$scriptFolder,
+    $scriptFolder,
 
     [Parameter(Mandatory)]
     [ValidateScript( {
@@ -114,9 +114,14 @@ if (test-path -path $scriptFolder)
 {
     Write-Host "Running Pester from the folder [$scriptFolder] output sent to [$resultsFile]"
     $Parameters.Add("Script", $scriptFolder)
-} else {
-    Write-Host "Running Pester from using the script parameter [$scriptFolder] output sent to [$resultsFile]"
+}
+elseif ($ScriptFolder -is [String] -and $scriptFolder -match '@{') {
+    Write-Host "Running Pester using the script parameter [$scriptFolder] output sent to [$resultsFile]"
     $Parameters.Add("Script", (Get-HashtableFromString -line $scriptFolder))
+}
+else {
+    Write-Host "Running Pester using the script parameter [$($scriptFolder | Format-Table | Out-String)] output sent to [$resultsFile]"
+    $Parameters.Add("Script", $scriptFolder)
 }
 
 if ($Tag) {
