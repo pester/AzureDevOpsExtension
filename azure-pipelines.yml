@@ -34,7 +34,7 @@ stages:
             rootFolder: './Extension'
             outputPath: '$(Build.ArtifactStagingDirectory)/Pester.vsix'
             updateTasksVersion: true
-            extensionVersion: $(GitVersion.MajorMinorPatch)
+            extensionVersion: "$(GitVersion.MajorMinorPatch).$(GitVersion.CommitsSinceVersionSource)"
 
         - task: PublishBuildArtifacts@1
           displayName: 'Publish Artifact: vsix'
