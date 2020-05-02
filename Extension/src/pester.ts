@@ -85,7 +85,7 @@ export async function run() {
         }
 
         if (TargetPesterVersion !== "0.0.0") {
-            args.push("-PesterVersion");
+            args.push("-TargetPesterVersion");
             args.push(TargetPesterVersion);
         }
 
