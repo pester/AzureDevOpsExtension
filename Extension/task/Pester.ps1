@@ -38,7 +38,9 @@ param
 
     [string]$CodeCoverageFolder,
 
-    [string]$ScriptBlock
+    [string]$ScriptBlock,
+
+    [string]$TargetPesterVersion = "latest"
 )
 
 Write-Host "scriptFolder $scriptFolder"
@@ -52,6 +54,7 @@ Write-Host "CodeCoverageFolder $CodeCoverageFolder"
 Write-Host "ScriptBlock $ScriptBlock"
 
 Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
+Import-Pester -Version $TargetPesterVersion
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     # Get the command parameters
@@ -78,31 +81,6 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
 
-if ((Get-Module -Name PowerShellGet -ListAvailable) -and
-    (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck')) {
-
-    try {
-        $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
-    }
-    catch {
-        try {
-            Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
-        }
-        catch {
-            Write-Host "##vos[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
-            Import-Module "$PSScriptRoot\4.6.0\Pester.psd1" -force
-        }
-    }
-    $NewestPester = Find-Module -Name Pester | Sort-Object Version -Descending | Select-Object -First 1
-    If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
-        Install-Module -Name Pester -Scope CurrentUser -Force -Repository $NewestPester.Repository -SkipPublisherCheck
-    }
-    Import-Module -Name Pester
-}
-else {
-    Write-Host "##vos[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
-    Import-Module "$PSScriptRoot\4.6.0\Pester.psd1" -force
-}
 
 $Parameters = @{
     PassThru = $True
