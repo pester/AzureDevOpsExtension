@@ -1,3 +1,4 @@
+name: $(major).$(minor).$(rev:r)
 stages:
   - stage: build
     displayName: Build VSIX
@@ -6,10 +7,6 @@ stages:
         pool:
           vmimage: ubuntu-latest
         steps: 
-        - task: GitVersion@5
-          inputs:
-            runtime: 'core'
-
         #- task: Pester@9
         #  inputs:
         #    scriptFolder: '$(System.DefaultWorkingDirectory)\Extension\test\PesterTask'
@@ -59,7 +56,7 @@ stages:
             rootFolder: './Extension'
             outputPath: '$(Build.ArtifactStagingDirectory)/Pester.vsix'
             updateTasksVersion: true
-            extensionVersion: "$(GitVersion.MajorMinorPatch).$(GitVersion.CommitsSinceVersionSource)"
+            extensionVersion: "$(Build.BuildNumber)"
 
         - task: PublishBuildArtifacts@1
           displayName: 'Publish Artifact: vsix'

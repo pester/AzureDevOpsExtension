@@ -1,7 +1,7 @@
 Describe "Testing Pester Task" {
 
     BeforeAll {
-        $taskPath = "$PSScriptRoot\..\..\Task"
+        $taskPath = Resolve-Path "$PSScriptRoot/../../task"
         $sut = Join-Path -Path $taskPath -ChildPath Pester.ps1 -Resolve
     }
 

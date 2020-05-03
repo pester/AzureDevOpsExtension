@@ -34,7 +34,8 @@ function Import-Pester {
 
 
     if ((Get-Module -Name PowerShellGet -ListAvailable) -and
-        (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck')) {
+        (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck') -and
+        (Get-PSRepository)) {
 
         try {
             $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
@@ -44,7 +45,7 @@ function Import-Pester {
                 Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
             }
             catch {
-                Write-Host "##vos[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
+                Write-Host "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
                 Import-Module "$PSScriptRoot\4.10.1\Pester.psd1" -force -Verbose:$false
             }
         }
@@ -65,7 +66,7 @@ function Import-Pester {
         Import-Module -Name Pester -RequiredVersion $NewestPester.Version -Verbose:$false
     }
     else {
-        Write-Host "##vos[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
+        Write-Host "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
         Import-Module "$PSScriptRoot\4.10.1\Pester.psd1" -Force -Verbose:$false
     }
 
