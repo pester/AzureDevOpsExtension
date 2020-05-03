@@ -1,7 +1,9 @@
-$taskPath = "$PSScriptRoot\..\..\Task"
-$sut = Join-Path -Path $taskPath -ChildPath Pester.ps1 -Resolve
-
 Describe "Testing Pester Task" {
+
+    BeforeAll {
+        $taskPath = "$PSScriptRoot\..\..\Task"
+        $sut = Join-Path -Path $taskPath -ChildPath Pester.ps1 -Resolve
+    }
 
     Context "Testing Task Input" {
 
@@ -38,14 +40,11 @@ Describe "Testing Pester Task" {
         }
         it "Calls Invoke-Pester with multiple Tags specified" {
             mock Invoke-Pester { }
-            mock Import-Module { }
             Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
-            Mock Install-Module { }
-            Mock Find-Module { }
-            Mock Get-PackageProvider { $True }
-            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
+            Function Import-Pester { }
+            Mock Import-Pester { }
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -Tag 'Infrastructure,Integration'
             $Tag.Length | Should Be 2
@@ -57,14 +56,11 @@ Describe "Testing Pester Task" {
         }
         it "Calls Invoke-Pester with multiple ExcludeTags specified" {
             mock Invoke-Pester { }
-            mock Import-Module { }
             Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
-            Mock Install-Module { }
-            Mock Find-Module { }
-            Mock Get-PackageProvider { $True }
-            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
+            Function Import-Pester { }
+            Mock Import-Pester { }
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml -ExcludeTag 'Example,Demo'
             $ExcludeTag.Length | Should be 2
@@ -74,14 +70,11 @@ Describe "Testing Pester Task" {
 
         it "Handles CodeCoverageOutputFile being null from VSTS" {
             mock Invoke-Pester { }
-            mock Import-Module { }
             Mock Write-Host { }
             Mock Write-Warning { }
             Mock Write-Error { }
-            Mock Install-Module { }
-            Mock Find-Module { }
-            Mock Get-PackageProvider { $True }
-            Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
+            Function Import-Pester { }
+            Mock Import-Pester { }
 
             . $Sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\Output.xml -CodeCoverageOutputFile $null
             Assert-MockCalled Invoke-Pester
@@ -97,17 +90,17 @@ Describe "Testing Pester Task" {
     }
 
     Context "Testing Task Processing" {
-        mock Invoke-Pester { "Tag" } -ParameterFilter {$Tag -and $Tag -eq 'Infrastructure'}
-        mock Invoke-Pester { "ExcludeTag" } -ParameterFilter {$ExcludeTag -and $ExcludeTag -eq 'Example'}
-        mock Invoke-Pester { "AllTests" }
-        mock Import-Module { }
-        Mock Write-Host { }
-        Mock Write-Warning { }
-        Mock Write-Error { }
-        Mock Install-Module { }
-        Mock Find-Module { }
-        Mock Get-PackageProvider { $True }
-        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
+        BeforeAll {
+            mock Invoke-Pester { "Tag" } -ParameterFilter {$Tag -and $Tag -eq 'Infrastructure'}
+            mock Invoke-Pester { "ExcludeTag" } -ParameterFilter {$ExcludeTag -and $ExcludeTag -eq 'Example'}
+            mock Invoke-Pester { "AllTests" }
+            mock Import-Module { }
+            Mock Write-Host { }
+            Mock Write-Warning { }
+            Mock Write-Error { }
+            Function Import-Pester { }
+            Mock Import-Pester { }
+        }
 
         it "Calls Invoke-Pester correctly with ScriptFolder and ResultsFile specified" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -145,32 +138,32 @@ Describe "Testing Pester Task" {
     }
 
     Context "Testing Task Output" {
-        Mock Write-Host { }
-        Mock Write-Warning { }
-        Mock Import-Module { }
-        Mock Install-Module { }
-        Mock Write-Error { }
-        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
-        mock Invoke-Pester {
-            param ($OutputFile)
-            New-Item -Path $OutputFile -ItemType File
-        } -ParameterFilter {$ResultsFile -and $ResultsFile -eq 'TestDrive:\output.xml'}
+        BeforeAll {
+            Mock Write-Host { }
+            Mock Write-Warning { }
+            Mock Import-Module { }
+            Mock Write-Error { }
+            mock Invoke-Pester {
+                param ($OutputFile)
+                New-Item -Path $OutputFile -ItemType File
+            } -ParameterFilter {$ResultsFile -and $ResultsFile -eq 'TestDrive:\output.xml'}
 
-        mock Invoke-Pester {
-            New-Item -Path $CodeCoverageOutputFile -ItemType File
-        } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
+            mock Invoke-Pester {
+                New-Item -Path $CodeCoverageOutputFile -ItemType File
+            } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage.xml'}
 
-        mock Invoke-Pester {
-            New-Item -Path $CodeCoverageOutputFile -ItemType File
-        } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage2.xml' -and $CodeCoverageFolder}
+            mock Invoke-Pester {
+                New-Item -Path $CodeCoverageOutputFile -ItemType File
+            } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage2.xml' -and $CodeCoverageFolder}
 
-        mock Invoke-Pester {
-            New-Item -Path $CodeCoverageOutputFile -ItemType File
-        } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage3.xml' -and $CodeCoverageFolder}
+            mock Invoke-Pester {
+                New-Item -Path $CodeCoverageOutputFile -ItemType File
+            } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage3.xml' -and $CodeCoverageFolder}
 
-        mock Invoke-Pester {}
-        Mock Find-Module { }
-        Mock Get-PackageProvider { $True }
+            mock Invoke-Pester {}
+            Function Import-Pester { }
+            Mock Import-Pester { }
+        }
 
         it "Creates the output xml file correctly" {
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
@@ -218,98 +211,6 @@ Describe "Testing Pester Task" {
             Assert-MockCalled -CommandName Invoke-Pester -ParameterFilter {$CodeCoverage -and $CodeCoverage -eq "$((Get-Item 'TestDrive:\').FullName)Source\Code.ps1" -and $CodeCoverage -notlike "$((Get-Item 'TestDrive:\').FullName)Tests\*.ps1"}
         }
 
-    }
-
-    Context "Testing Pester Module Version Loading" {
-
-        mock Invoke-Pester { }
-        mock Import-Module { }
-        Mock Install-Module { $true }
-        Mock Write-host { }
-        Mock Write-Warning { }
-        Mock Get-PSRepository {[PSCustomObject]@{Name = 'PSGallery'}}
-        Mock Write-Error { }
-        Mock Get-Command { [PsCustomObject]@{Parameters=@{SkipPublisherCheck='SomeValue'}}} -ParameterFilter {$Name -eq 'Install-Module'}
-        Mock Get-Command { [PsCustomObject]@{Parameters=@{AllowPrerelease='SomeValue'}}} -ParameterFilter {$Name -eq 'Find-Module'}
-
-        it "Installs the latest version of Pester when on PS5+ and PowerShellGet is available" {
-            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.6.0") }
-            Mock Get-ChildItem  { return $true }
-            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}}
-            Mock Get-PackageProvider { $True }
-
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
-
-            Assert-MockCalled  Install-Module
-            Assert-MockCalled Invoke-Pester
-        }
-        it "Installs the latest version of Pester from PSGallery when multiple repositories are available" {
-            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.6.0") }
-            Mock Get-ChildItem  { return $true }
-            Mock Find-Module { @(
-                    [PsCustomObject]@{Version=[version]::new(4,3,0);Repository='OtherRepository'}
-                    [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}
-                )
-            }
-            Mock Get-PackageProvider { $True }
-
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
-
-            Assert-MockCalled Install-Module -Scope It -ParameterFilter {$Repository -eq 'PSGallery'}
-            Assert-MockCalled Invoke-Pester
-        }
-        it "Installs the required version of NuGet provider when PowerShellGet is available and NuGet isn't already installed" {
-            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.6.0") }
-            Mock Get-ChildItem  { return $true }
-            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}}
-            Mock Get-PackageProvider { throw }
-            Mock Install-PackageProvider {}
-
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
-
-            Assert-MockCalled Install-PackageProvider
-            Assert-MockCalled Install-Module
-            Assert-MockCalled Invoke-Pester
-        }
-
-        it "Should not install a new version of Pester when the latest is already installed" {
-            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.6.0") }
-            Mock Get-ChildItem  { return $true }
-            Mock Find-Module { [PsCustomObject]@{Version=(Get-Module Pester).Version;Repository='PSGallery'}}
-            Mock Get-PackageProvider { $True }
-
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
-
-            Assert-MockCalled Install-Module -Times 0 -Scope It
-            Assert-MockCalled Invoke-Pester
-        }
-
-        it "Should not Install the latest version of Pester when on PowerShellGet is available but SkipPublisherCheck is not available" {
-            Mock Test-Path { return $true } -ParameterFilter { $Path.EndsWith("\4.6.0") }
-            Mock Get-ChildItem  { return $true }
-            Mock Find-Module { [PsCustomObject]@{Version=[version]::new(9,9,9);Repository='PSGallery'}}
-            Mock Get-PackageProvider { $True }
-            Mock Get-Command { [PsCustomObject]@{Parameters=@{OtherProperty='SomeValue'}} } -ParameterFilter {$Name -eq 'Install-Module'}
-
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
-
-            Assert-MockCalled Install-Module -Times 0 -Scope It
-            Assert-MockCalled Import-Module -Times 1 -ParameterFilter {$Name -like '*\4.6.0\Pester.psd1'}
-            Assert-MockCalled Invoke-Pester
-            Assert-MockCalled Write-Warning -Times 0 -ParameterFilter {$Message -eq "Code coverage output not supported on Pester versions before 4.0.4."}
-        }
-        <#it "Loads Pester version that ships with task when not on PS5+ or PowerShellGet is unavailable" {
-            mock Invoke-Pester { }
-            mock Import-Module { }
-            Mock Write-Host { }
-            Mock Write-Warning { }
-            Mock Write-Error { }
-            mock Get-Module { }
-
-            &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.6.0\Pester.psd1" }
-            Assert-MockCalled Invoke-Pester
-        }#>
     }
 
 }

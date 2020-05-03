@@ -19,6 +19,15 @@ export async function run() {
         let CodeCoverageOutputFile = tl.getInput("CodeCoverageOutputFile");
         let CodeCoverageFolder = tl.getInput("CodeCoverageFolder");
         let ScriptBlock = tl.getInput("ScriptBlock");
+        let PesterVersion = tl.getInput("PesterVersion");
+
+        let TargetPesterVersion = "0.0.0";
+        if (PesterVersion === "OtherVersion") {
+            TargetPesterVersion = tl.getInput("TargetPesterVersion");
+            if (!TargetPesterVersion.match(/\d+\.\d+\.\d+/g)) {
+                logError(`Invalid version number provided for Pester. Please ensure it is in the format x.y.z`);
+            }
+        }
 
         // we need to get the verbose flag passed in as script flag
         var verbose = (tl.getVariable("System.Debug") === "true");
@@ -73,6 +82,11 @@ export async function run() {
 
         if (verbose) {
             args.push("-Verbose");
+        }
+
+        if (TargetPesterVersion !== "0.0.0") {
+            args.push("-TargetPesterVersion");
+            args.push(TargetPesterVersion);
         }
 
         logInfo(`${executable} ${args.join(" ")}`);

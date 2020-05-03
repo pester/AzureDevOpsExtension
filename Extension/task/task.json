@@ -110,6 +110,32 @@
       "visibleRule": "usePSCore = False"
     },
     {
+      "name": "PesterVersion",
+      "type": "radio",
+      "label": "Pester Version",
+      "defaultValue": "LatestVersion",
+      "required": false,
+      "options": {
+          "LatestVersion": "Latest Available version",
+          "OtherVersion": "Specify other version"
+      },
+      "groupName": "advanced",
+      "helpMarkDown": "Choose which version of Pester to use for your tests, the version specified will be downloaded from an available PS Gallery. If no gallery is available then it will fall back to the version shipped with the task, currently 4.10.1"
+    },
+    {
+        "name": "TargetPesterVersion",
+        "aliases": [
+            "preferredPesterVersion"
+        ],
+        "type": "string",
+        "label": "Preferred Pester PowerShell Version",
+        "defaultValue": "",
+        "required": true,
+        "visibleRule": "PesterVersion = OtherVersion",
+        "groupName": "advanced",
+        "helpMarkDown": "Speicify version of Pester to install if not latest. This will download it from whichever PS Gallery has it available. If it's not available then the task will fail."
+    },
+    {
       "name": "ScriptBlock",
       "type": "string",
       "label": "Pre-Test Scriptblock",

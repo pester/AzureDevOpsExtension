@@ -10,6 +10,31 @@ stages:
           inputs:
             runtime: 'core'
 
+        #- task: Pester@9
+        #  inputs:
+        #    scriptFolder: '$(System.DefaultWorkingDirectory)\Extension\test\PesterTask'
+        #    resultsFile: '$(System.DefaultWorkingDirectory)\Test-Pester.XML'
+        #    CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\CC-Pester.XML'
+        #    usePSCore: False
+        #    CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\Extension\Task'
+        #    run32Bit: False
+        #    PesterVersion: 'OtherVersion'
+        #    preferredPesterVersion: '4.10.1'
+        #
+        #- task: PublishTestResults@2
+        #  condition: always()
+        #  inputs:
+        #    testResultsFiles: '$(System.DefaultWorkingDirectory)\Test-Pester.XML'
+        #    testResultsFormat: NUnit
+        #    testRunTitle: Pester Extension Build
+        #
+        #- task: PublishCodeCoverageResults@1
+        #  condition: always()
+        #  inputs:
+        #    codeCoverageTool: JaCoCo
+        #    pathToSources: '$(System.DefaultWorkingDirectory)\Extension\Task'
+        #    summaryFileLocation: '$(System.DefaultWorkingDirectory)\CC-Pester.XML'
+
         - task: NodeTool@0
           inputs:
             versionSpec: '10.x'
@@ -34,7 +59,7 @@ stages:
             rootFolder: './Extension'
             outputPath: '$(Build.ArtifactStagingDirectory)/Pester.vsix'
             updateTasksVersion: true
-            extensionVersion: $(GitVersion.MajorMinorPatch)
+            extensionVersion: "$(GitVersion.MajorMinorPatch).$(GitVersion.CommitsSinceVersionSource)"
 
         - task: PublishBuildArtifacts@1
           displayName: 'Publish Artifact: vsix'
