@@ -34,7 +34,8 @@ function Import-Pester {
 
 
     if ((Get-Module -Name PowerShellGet -ListAvailable) -and
-        (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck')) {
+        (Get-Command Install-Module).Parameters.ContainsKey('SkipPublisherCheck') -and
+        (Get-PSRepository)) {
 
         try {
             $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
