@@ -2,7 +2,7 @@
 Describe "Testing Helper Functions" {
 
     BeforeAll {
-        Import-Module -Name "$PSScriptRoot\..\..\Task\HelperModule.psm1" -Force
+        Import-Module -Name (Resolve-Path "$PSScriptRoot/../../task/HelperModule.psm1") -Force
     }
     Context "Testing Get-HashtableFromString" {
 
@@ -152,7 +152,20 @@ Describe "Testing Helper Functions" {
             Import-Pester -Version "latest"
 
             Assert-MockCalled -CommandName Install-Module -Times 0 -Scope It
-            Assert-MockCalled -CommandName Import-Module -Times 1 -ParameterFilter {$Name -like '*\4.6.0\Pester.psd1'}
+            Assert-MockCalled -CommandName Import-Module -Times 1 -ParameterFilter {$Name -like '*\4.10.1\Pester.psd1'}
+        }
+
+        It "Should fall back to build in version of Pester when no repositories are available" {
+            Mock -CommandName Get-PSRepository -MockWith {}
+            Mock -CommandName Get-Command -MockWith { [PsCustomObject]@{Parameters=@{SkipPublisherCheck='SomeValue'}}} -ParameterFilter {$Name -eq 'Install-Module'}
+
+            Import-Pester -Version "latest"
+
+            Assert-MockCalled -CommandName Install-Module -Times 0 -Scope It
+            Assert-MockCalled -CommandName Write-Host -Times 1 -Scope It -ParameterFilter {
+                $Object -eq "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
+            }
+            Assert-MockCalled -CommandName Import-Module -Times 1 -ParameterFilter {$Name -like '*\4.10.1\Pester.psd1'}
         }
 
         <#It "Loads Pester version that ships with task when not on PS5+ or PowerShellGet is unavailable" {
@@ -164,7 +177,7 @@ Describe "Testing Helper Functions" {
             Mock -CommandName Get-Module -MockWith { }
 
             &$sut -ScriptFolder TestDrive:\ -ResultsFile TestDrive:\output.xml
-            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.6.0\Pester.psd1" }
+            Assert-MockCalled  Import-Module -ParameterFilter { $Name -eq "$pwd\4.10.1\Pester.psd1" }
             Assert-MockCalled Invoke-Pester
         }#>
     }

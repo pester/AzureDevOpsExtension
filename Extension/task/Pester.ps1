@@ -53,7 +53,7 @@ Write-Host "CodeCoverageOutputFile $CodeCoverageOutputFile"
 Write-Host "CodeCoverageFolder $CodeCoverageFolder"
 Write-Host "ScriptBlock $ScriptBlock"
 
-Import-Module -Name "$PSScriptRoot\HelperModule.psm1" -Force
+Import-Module -Name (Join-Path $PSScriptRoot "HelperModule.psm1") -Force
 Import-Pester -Version $TargetPesterVersion
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
