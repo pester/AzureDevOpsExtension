@@ -2,7 +2,7 @@
   "id": "cca5462b-887d-4617-bf3f-dcf0d3c622e9",
   "name": "Pester",
   "friendlyName": "Pester Test Runner",
-  "description": "Run Pester tests by either installing the latest version of Pester at run time (if possible) or using the version shipped with the task (4.6.0)",
+  "description": "Run Pester tests by either installing the latest version of Pester at run time (if possible) or using the version shipped with the task (4.10.1)",
   "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/pester/AzureDevOpsExtension)",
   "category": "Test",
   "visibility": [
