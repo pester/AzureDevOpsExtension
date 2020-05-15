@@ -159,6 +159,8 @@ Describe "Testing Pester Task" {
             mock Invoke-Pester {
                 New-Item -Path $CodeCoverageOutputFile -ItemType File
             } -ParameterFilter {$CodeCoverageOutputFile -and $CodeCoverageOutputFile -eq 'TestDrive:\codecoverage3.xml' -and $CodeCoverageFolder}
+             
+            
 
             mock Invoke-Pester {}
             Function Import-Pester { }
