@@ -1,0 +1,157 @@
+{
+  "id": "cca5462b-887d-4617-bf3f-dcf0d3c622e9",
+  "name": "Pester",
+  "friendlyName": "Pester Test Runner",
+  "description": "Run Pester tests by either installing the latest version of Pester at run time (if possible) or using the version shipped with the task (5.0.0)",
+  "helpMarkDown": "Version: #{Build.BuildNumber}#. [More Information](https://github.com/pester/AzureDevOpsExtension)",
+  "category": "Test",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Pester",
+  "version": {
+    "Major": 1,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "demands": [],
+  "minimumAgentVersion": "1.82.0",
+  "groups": [
+    {
+      "name": "tags",
+      "displayName": "Tags",
+      "isExpanded": false
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "TestFolder",
+      "aliases": [
+        "scriptFolder"
+      ],
+      "type": "string",
+      "label": "Tests Folder",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\*",
+      "required": true,
+      "helpMarkDown": "Folder containing tests to run from e.g $(System.DefaultWorkingDirectory)\\*"
+    },
+    {
+      "name": "resultsFile",
+      "type": "string",
+      "label": "Results File",
+      "defaultValue": "$(System.DefaultWorkingDirectory)\\Test-Pester.XML",
+      "required": true,
+      "helpMarkDown": "Results File (nUnit format)"
+    },
+    {
+      "name": "CodeCoverageOutputFile",
+      "type": "string",
+      "label": "Code Coverage Output File",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Code coverage output file (JaCoCo format) - Requires Pester version 4.0.4+"
+    },
+    {
+      "name": "tag",
+      "type": "string",
+      "label": "Tags",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Tags used to filter which tests to run.",
+      "groupName": "tags"
+    },
+    {
+      "name": "excludeTag",
+      "type": "string",
+      "label": "Exclude Tag",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Tags to exclude when running tests.",
+      "groupName": "tags"
+    },
+    {
+      "name": "usePSCore",
+      "type": "boolean",
+      "label": "Use PowerShell Core (Windows Only)",
+      "defaultValue": "False",
+      "required": true,
+      "helpMarkDown": "On a Windows agent, if set will run Pester tests with 'pwsh', if false will use 'PowerShell.exe'. On Non-Windows agents 'pwsh' always used",
+      "groupName": "advanced"
+    },
+    {
+      "name": "additionalModulePath",
+      "type": "string",
+      "label": "Path to additional PowerShell modules",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Adds a path to PSModulePath before running the tests, for dependencies or generated modules",
+      "groupName": "advanced"
+    },
+    {
+      "name": "CodeCoverageFolder",
+      "type": "string",
+      "label": "Code Coverage Folder",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Path to the folder or file to run coverage against. Requires CodeCoverageOutputFile.",
+      "groupName": "advanced"
+    },
+    {
+      "name": "run32Bit",
+      "type": "boolean",
+      "label": "Run in 32bit",
+      "defaultValue": "False",
+      "required": false,
+      "helpMarkDown": "Run in 32bit, only applicable on Windows agents",
+      "groupName": "advanced",
+      "visibleRule": "usePSCore = False"
+    },
+    {
+      "name": "PesterVersion",
+      "type": "radio",
+      "label": "Pester Version",
+      "defaultValue": "LatestVersion",
+      "required": false,
+      "options": {
+          "LatestVersion": "Latest Available version",
+          "OtherVersion": "Specify other version"
+      },
+      "groupName": "advanced",
+      "helpMarkDown": "Choose which version of Pester to use for your tests, the version specified will be downloaded from an available PS Gallery. If no gallery is available then it will fall back to the version shipped with the task, currently 4.10.1"
+    },
+    {
+        "name": "TargetPesterVersion",
+        "aliases": [
+            "preferredPesterVersion"
+        ],
+        "type": "string",
+        "label": "Preferred Pester PowerShell Version",
+        "defaultValue": "",
+        "required": true,
+        "visibleRule": "PesterVersion = OtherVersion",
+        "groupName": "advanced",
+        "helpMarkDown": "Speicify version of Pester to install if not latest. This will download it from whichever PS Gallery has it available. If it's not available then the task will fail."
+    },
+    {
+      "name": "ScriptBlock",
+      "type": "string",
+      "label": "Pre-Test Scriptblock",
+      "required": false,
+      "helpMarkDown": "A scriptblock to run before tests are executed. This will be run in the scope of the task where Invoke-Pester is run.",
+      "groupName": "advanced"
+    }
+   ],
+  "instanceNameFormat": "Pester Test Runner",
+  "execution": {
+    "Node": {
+      "target": "pesterV10.js",
+      "argumentFormat": ""
+    }
+  }
+}

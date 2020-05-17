@@ -7,30 +7,21 @@ stages:
         pool:
           vmimage: ubuntu-latest
         steps: 
-        #- task: Pester@9
-        #  inputs:
-        #    scriptFolder: '$(System.DefaultWorkingDirectory)\Extension\test\PesterTask'
-        #    resultsFile: '$(System.DefaultWorkingDirectory)\Test-Pester.XML'
-        #    CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\CC-Pester.XML'
-        #    usePSCore: False
-        #    CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\Extension\Task'
-        #    run32Bit: False
-        #    PesterVersion: 'OtherVersion'
-        #    preferredPesterVersion: '4.10.1'
-        #
-        #- task: PublishTestResults@2
-        #  condition: always()
-        #  inputs:
-        #    testResultsFiles: '$(System.DefaultWorkingDirectory)\Test-Pester.XML'
-        #    testResultsFormat: NUnit
-        #    testRunTitle: Pester Extension Build
-        #
-        #- task: PublishCodeCoverageResults@1
-        #  condition: always()
-        #  inputs:
-        #    codeCoverageTool: JaCoCo
-        #    pathToSources: '$(System.DefaultWorkingDirectory)\Extension\Task'
-        #    summaryFileLocation: '$(System.DefaultWorkingDirectory)\CC-Pester.XML'
+        - powershell: |
+            $V9Task = Get-Content ./Extension/PesterTask/PesterV9/task.json -Raw | ConvertFrom-Json
+            $V9Task.Version.Major = 9
+            $V9Task.Version.Minor = $(Minor)
+            $V9Task.Version.Patch = "$(Build.BuildNumber)".Split('.')[-1]
+            $V9Task | ConvertTo-Json -Depth 10 | Set-Content ./Extension/PesterTask/PesterV9/task.json
+          displayName: Update V9 task version
+
+        - powershell: |
+            $VLatestTask = Get-Content ./Extension/PesterTask/PesterV10/task.json -Raw | ConvertFrom-Json
+            $VLatestTask.Version.Major = $(Major)
+            $VLatestTask.Version.Minor = $(Minor)
+            $VLatestTask.Version.Patch = "$(Build.BuildNumber)".Split('.')[-1]
+            $VLatestTask | ConvertTo-Json -Depth 10 | Set-Content ./Extension/PesterTask/PesterV10/task.json
+          displayName: Update V9 task version
 
         - task: NodeTool@0
           inputs:

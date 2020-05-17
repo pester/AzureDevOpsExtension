@@ -10,7 +10,7 @@ import {
 export async function run() {
     try {
 
-        let scriptFolder = tl.getInput("scriptFolder");
+        let TestFolder = tl.getInput("TestFolder");
         let resultsFile = tl.getInput("resultsFile");
         let run32Bit = tl.getInput("run32Bit");
         let additionalModulePath = tl.getInput("additionalModulePath");
@@ -45,7 +45,7 @@ export async function run() {
 
         // we need to not pass the null param
         var args = [__dirname + "\\Pester.ps1",
-                    "-scriptFolder", scriptFolder,
+                    "-TestFolder", TestFolder,
                     "-resultsFile", resultsFile,
                     "-run32Bit", run32Bit,
                 ];
