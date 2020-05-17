@@ -12,8 +12,8 @@
   "author": "Pester",
   "version": {
     "Major": 9,
-    "Minor": 1,
-    "Patch": 19
+    "Minor": 2,
+    "Patch": 0
   },
   "demands": [],
   "minimumAgentVersion": "1.82.0",
