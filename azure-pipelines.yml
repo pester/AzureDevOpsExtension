@@ -8,20 +8,12 @@ stages:
           vmimage: ubuntu-latest
         steps: 
         - powershell: |
-            $V9Task = Get-Content ./Extension/PesterTask/PesterV9/task.json -Raw | ConvertFrom-Json
-            $V9Task.Version.Major = 9
-            $V9Task.Version.Minor = $(Minor)
-            $V9Task.Version.Patch = "$(Build.BuildNumber)".Split('.')[-1]
-            $V9Task | ConvertTo-Json -Depth 10 | Set-Content ./Extension/PesterTask/PesterV9/task.json
-          displayName: Update V9 task version
-
-        - powershell: |
             $VLatestTask = Get-Content ./Extension/PesterTask/PesterV10/task.json -Raw | ConvertFrom-Json
             $VLatestTask.Version.Major = $(Major)
             $VLatestTask.Version.Minor = $(Minor)
             $VLatestTask.Version.Patch = "$(Build.BuildNumber)".Split('.')[-1]
             $VLatestTask | ConvertTo-Json -Depth 10 | Set-Content ./Extension/PesterTask/PesterV10/task.json
-          displayName: Update V9 task version
+          displayName: Update V10 task version
 
         - task: NodeTool@0
           inputs:
