@@ -45,6 +45,7 @@ param
 
 if ($TargetPesterVersion -match '^4') {
     Write-Host "##vso[task.logissue type=error]This version of the task does not support Pester V4, please use task version 9."
+    exit 1
 }
 
 Write-Host "TestFolder $TestFolder"
