@@ -65,7 +65,7 @@
   },
   "files": [
     {
-      "path": "task"
+      "path": "PesterTask"
     }
   ],
   "contributions": [
@@ -76,7 +76,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "task"
+        "name": "PesterTask"
       }
     }
   ]
