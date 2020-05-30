@@ -42,7 +42,7 @@ function Import-Pester {
         }
         catch {
             try {
-                Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
+                Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.208 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
             }
             catch {
                 Write-Host "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
