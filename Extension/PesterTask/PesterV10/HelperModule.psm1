@@ -46,7 +46,7 @@ function Import-Pester {
             }
             catch {
                 Write-Host "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
-                Import-Module -Name (Join-Path $PSScriptRoot "4.10.1\Pester.psd1") -Force -Verbose:$false -Global
+                Import-Module -Name (Join-Path $PSScriptRoot "5.0.1\Pester.psd1") -Force -Verbose:$false -Global
             }
         }
 
@@ -67,7 +67,7 @@ function Import-Pester {
     }
     else {
         Write-Host "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
-        Import-Module -Name (Join-Path $PSScriptRoot "4.10.1\Pester.psd1") -Force -Verbose:$false -Global
+        Import-Module -Name (Join-Path $PSScriptRoot "5.0.1\Pester.psd1") -Force -Verbose:$false -Global
     }
 
 }
