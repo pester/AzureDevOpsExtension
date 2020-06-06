@@ -1,4 +1,5 @@
 name: $(major).$(minor).$(rev:r)
+
 stages:
   - stage: build
     displayName: Build VSIX
@@ -40,8 +41,135 @@ stages:
             outputPath: '$(Build.ArtifactStagingDirectory)/Pester.vsix'
             extensionVersion: "$(Build.BuildNumber)"
 
-        - task: PublishBuildArtifacts@1
+        - task: PublishPipelineArtifact@1
           displayName: 'Publish Artifact: vsix'
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            targetPath: '$(Build.ArtifactStagingDirectory)'
             ArtifactName: vsix
+            publishLocation: pipeline
+
+  - stage: deploydev
+    dependsOn: build
+    displayName: Deploy Dev Version
+    jobs:
+      - deployment: deploy
+        pool:
+          vmImage: windows-latest
+        environment: pester-dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
+                  displayName: 'Publish Extension'
+                  inputs:
+                    connectedServiceName: Pester
+                    fileType: vsix
+                    vsixFile: '$(Pipeline.Workspace)/vsix/pester.vsix'
+                    extensionTag: '-DEV'
+                    updateTasksVersion: false
+                    extensionVisibility: private
+
+  - stage: validatedev
+    dependsOn: deploydev
+    displayName: Validate Dev Deployed
+    jobs:
+      - deployment: validate
+        displayName: Validate publish
+        environment: pester
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - powershell: |
+                    Write-Host "Pester task avaiable"
+
+  - stage: testv9
+    displayName: Test v9
+    dependsOn: validatedev
+    jobs:
+      - job: win_ps
+        displayName: Windows - Win PowerShell
+        pool:
+          vmImage: windows-latest
+        steps:
+          - template: pester-v9.yml
+
+      - job: win_ps_core
+        displayName: Windows - Powershell
+        pool:
+          vmImage: windows-latest
+        steps:
+          - template: pester-v9.yml
+            parameters: 
+              pscore: true
+
+      - job: linux
+        displayName: Linux
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - template: pester-v9.yml
+
+      - job: mac
+        displayName: MacOS
+        pool:
+          vmImage: macOS-latest
+        steps:
+          - template: pester-v9.yml
+
+  - stage: testv10
+    displayName: Test v10
+    dependsOn: validatedev
+    jobs:
+      - job: win_ps
+        displayName: Windows - Win PowerShell
+        pool:
+          vmImage: windows-latest
+        steps:
+          - template: pester-v10.yml
+
+      - job: win_ps_core
+        displayName: Windows - PowerShell
+        pool:
+          vmImage: windows-latest
+        steps:
+          - template: pester-v10.yml
+            parameters: 
+              pscore: true
+
+      - job: linux
+        displayName: Linux
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - template: pester-v10.yml
+
+      - job: mac
+        displayName: MacOS
+        pool:
+          vmImage: macOS-latest
+        steps:
+          - template: pester-v10.yml
+
+  - stage:
+    dependsOn: 
+      - testv10
+      - testv9
+    displayName: Deploy Prod Version
+    jobs:
+      - deployment: deploy
+        pool:
+          vmImage: windows-latest
+        environment: pester-prod
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishExtension@1
+                  displayName: 'Publish Extension'
+                  inputs:
+                    connectedServiceName: Pester Prod
+                    fileType: vsix
+                    vsixFile: '$(Pipeline.Workspace)/vsix/pester.vsix'
+                    updateTasksVersion: false

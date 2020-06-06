@@ -1,0 +1,29 @@
+parameters:
+  - name: pscore
+    type: boolean
+    default: false
+
+steps:
+  - task: Pester.PesterRunner-DEV.Pester-Task.Pester@10
+    displayName: 'Pester Test Runner'
+    inputs:
+      scriptFolder: './Extension/tests'
+      resultsFile: '$(System.DefaultWorkingDirectory)/Test-Pester.XML'
+      CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)/CC-Pester.XML'
+      usePSCore: ${{ parameters.pscore }}
+      CodeCoverageFolder: './Extension/tests'
+      PesterVersion: OtherVersion
+      preferredPesterVersion: 5.0.2
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results Test-Pester.XML'
+    inputs:
+      testRunTitle: '$(agent.os)-v10'
+      testResultsFormat: NUnit
+      testResultsFiles: '$(System.DefaultWorkingDirectory)/Test-Pester.XML'
+    
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage'
+    inputs:
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/CC-Pester.XML'
+  
