@@ -92,6 +92,7 @@ $PesterConfig = @{
     Run = @{
         Path = $TestFolder
         Exit = $true
+        PassThrue = $true
     }
     TestResult = @{
         Enabled = $true
@@ -142,6 +143,6 @@ if (-not([String]::IsNullOrWhiteSpace($ScriptBlock))) {
 
 $result = Invoke-Pester -Configuration  ([PesterConfiguration]$PesterConfig)
 
-if ($result.failedCount -ne 0) {
+if ($result.failedCount -gt 0) {
     Write-Error "Pester returned errors"
 }
