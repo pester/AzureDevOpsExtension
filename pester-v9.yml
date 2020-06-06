@@ -17,6 +17,7 @@ steps:
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results Test-Pester.XML'
+    condition: 'always()'
     inputs:
       testRunTitle: '$(agent.os)-v9'
       testResultsFormat: NUnit
@@ -24,6 +25,7 @@ steps:
     
   - task: PublishCodeCoverageResults@1
     displayName: 'Publish code coverage'
+    condition: 'always()'
     inputs:
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/CC-Pester.XML'
   
