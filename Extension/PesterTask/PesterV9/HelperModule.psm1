@@ -38,32 +38,32 @@ function Import-Pester {
         (Get-PSRepository)) {
 
         try {
-            $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
-        }
-        catch {
             try {
-                Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.208 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
+                $null = Get-PackageProvider -Name NuGet -ErrorAction Stop
             }
             catch {
-                Write-Host "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
-                Import-Module -Name (Join-Path $PSScriptRoot "4.10.1\Pester.psd1") -Force -Verbose:$false -Global
+                Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.208 -Scope CurrentUser -Force -Confirm:$false -ErrorAction Stop
             }
-        }
 
-        if ($Version -eq "latest") {
-            $NewestPester = Find-Module -Name Pester -MaximumVersion 4.99.99 | Sort-Object Version -Descending | Select-Object -First 1
+            if ($Version -eq "latest") {
+                $NewestPester = Find-Module -Name Pester -MaximumVersion 4.99.99 -ErrorAction Stop | Sort-Object Version -Descending | Select-Object -First 1
 
-            If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
+                If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
+                    Install-Module -Name Pester -RequiredVersion $NewestPester.Version -Scope CurrentUser -Force -Repository $NewestPester.Repository -SkipPublisherCheck
+                }
+            }
+            else {
+                $NewestPester = Find-Module -Name Pester -RequiredVersion $Version -ErrorAction Stop | Select-Object -First 1
+
                 Install-Module -Name Pester -RequiredVersion $NewestPester.Version -Scope CurrentUser -Force -Repository $NewestPester.Repository -SkipPublisherCheck
             }
-        }
-        else {
-            $NewestPester = Find-Module -Name Pester -RequiredVersion $Version | Select-Object -First 1
 
-            Install-Module -Name Pester -RequiredVersion $NewestPester.Version -Scope CurrentUser -Force -Repository $NewestPester.Repository -SkipPublisherCheck
+            Import-Module -Name Pester -RequiredVersion $NewestPester.Version -Verbose:$false -Global
         }
-
-        Import-Module -Name Pester -RequiredVersion $NewestPester.Version -Verbose:$false -Global
+        catch {
+            Write-Host "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
+            Import-Module -Name (Join-Path $PSScriptRoot "4.10.1\Pester.psd1") -Force -Verbose:$false -Global
+        }
     }
     else {
         Write-Host "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
