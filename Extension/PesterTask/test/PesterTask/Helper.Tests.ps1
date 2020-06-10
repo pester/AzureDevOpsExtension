@@ -126,6 +126,21 @@ Describe "Testing Helper Functions" {
                 Assert-MockCalled -CommandName Install-PackageProvider
             }
 
+            It "Should fall back to build in version of Pester when Find-Module can't find Pester" {
+                Mock -CommandName Find-Module -MockWith { Write-Error "No match was found for the specified search 
+                criteria and module name 'Pester'"}
+                Mock -CommandName Get-PackageProvider -MockWith { $True }
+
+                Import-Pester -Version "latest"
+                
+                Assert-MockCalled -CommandName Install-Module -Times 0 -Scope It
+                Assert-MockCalled -CommandName Find-Module -Times 1 -Scope It
+                Assert-MockCalled -CommandName Write-Host -Times 1 -Scope It -ParameterFilter {
+                    $Object -eq "##vso[task.logissue type=warning]Falling back to version of Pester shipped with extension. To use a newer version please update the version of PowerShellGet available on this machine."
+                }
+                Assert-MockCalled -CommandName Import-Module -Times 1 -ParameterFilter {$Name -like '*\4.10.1\Pester.psd1'}
+            }
+
             It "Should not install a new version of Pester when the latest is already installed" {
                 Mock -CommandName Find-Module -MockWith { [PsCustomObject]@{Version=(Get-Module Pester).Version;Repository='PSGallery'}}
                 Mock -CommandName Get-PackageProvider -MockWith { $True }
