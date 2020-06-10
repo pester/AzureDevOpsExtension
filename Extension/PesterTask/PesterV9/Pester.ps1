@@ -47,6 +47,10 @@ if ($TargetPesterVersion -match '^5') {
     Write-Host "##vso[task.logissue type=error]This version of the task does not support Pester V5, please use task version 10 or higher."
     exit 1
 }
+if ($TargetPesterVersion -match 'latest') {
+    Write-Host "##vso[task.logissue type=warning]Task version not properly set so defaulting to enforcing it to be the latest possible v4 that we will support in this version of the task - v4.99.99"
+    $TargetPesterVersion = '4.99.99'
+}
 Write-Host "scriptFolder $scriptFolder"
 Write-Host "resultsFile $resultsFile"
 Write-Host "run32Bit $run32Bit"
@@ -58,7 +62,13 @@ Write-Host "CodeCoverageFolder $CodeCoverageFolder"
 Write-Host "ScriptBlock $ScriptBlock"
 
 Import-Module -Name (Join-Path $PSScriptRoot "HelperModule.psm1") -Force
-Import-Pester -Version $TargetPesterVersion
+If ($TargetPesterVersion -eq '4.99.99') {
+    Import-Pester -MaximumVersion $TargetPesterVersion
+} 
+else {
+    Import-Pester -Version $TargetPesterVersion
+} 
+
 
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     # Get the command parameters
@@ -74,7 +84,7 @@ if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
         }
 
     }
-    write-warning "Re-launching in x86 PowerShell with $($args -join ' ')"
+    Write-Warning "Re-launching in x86 PowerShell with $($args -join ' ')"
     &"$env:windir\syswow64\windowspowershell\v1.0\powershell.exe" -noprofile -executionpolicy bypass -file $myinvocation.Mycommand.path $args
     exit
 }
@@ -87,13 +97,12 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
 
 
 $Parameters = @{
-    PassThru = $True
-    OutputFile = $resultsFile
+    PassThru     = $True
+    OutputFile   = $resultsFile
     OutputFormat = 'NUnitXml'
 }
 
-if (test-path -path $scriptFolder)
-{
+if (Test-Path -path $scriptFolder) {
     Write-Host "Running Pester from the folder [$scriptFolder] output sent to [$resultsFile]"
     $Parameters.Add("Script", $scriptFolder)
 }
@@ -119,7 +128,7 @@ if ($CodeCoverageOutputFile -and (Get-Module Pester).Version -ge [Version]::Pars
         $CodeCoverageFolder = $scriptFolder
     }
     $Files = Get-ChildItem -Path $CodeCoverageFolder -include *.ps1, *.psm1 -Exclude *.Tests.ps1 -Recurse |
-        Select-object -ExpandProperty Fullname
+        Select-Object -ExpandProperty Fullname
 
     if ($Files) {
         $Parameters.Add('CodeCoverage', $Files)
