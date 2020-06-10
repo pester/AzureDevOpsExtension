@@ -2,7 +2,7 @@
 Describe "Testing Helper Functions" {
 
     BeforeAll {
-        Import-Module -Name (Resolve-Path "$PSScriptRoot/../../PesterV9/HelperModule.psm1") -Forc
+        Import-Module -Name (Resolve-Path "$PSScriptRoot/../../PesterV9/HelperModule.psm1") -Force
     }
     Context "Testing Get-HashtableFromString" {
 
