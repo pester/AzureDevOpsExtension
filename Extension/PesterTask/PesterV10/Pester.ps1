@@ -86,19 +86,18 @@ if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
     Write-Host "Adding additional module path [$additionalModulePath] to `$env:PSModulePath"
     $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
 }
+$PesterConfig = [PesterConfiguration]::Default
 
-$PesterConfig = @{
-
-    Run = @{
-        Path = $TestFolder
-        PassThru = $true
-    }
-    TestResult = @{
-        Enabled = $true
-        OutputFormat = 'NUnit2.5'
-        OutputPath = $resultsFile
-    }
+$PesterConfig.run = @{
+    Path     = $TestFolder
+    PassThru = $true
 }
+$PesterConfig.TestResult = @{
+    Enabled      = $true
+    OutputFormat = 'NUnit2.5'
+    OutputPath   = $resultsFile
+}
+
 
 $Filter = @{}
 if ($Tag) {
@@ -110,29 +109,26 @@ if ($ExcludeTag) {
     $Filter.Add('ExcludeTag', $ExcludeTag)
 }
 
-$PesterConfig['Filter'] = $Filter
+$PesterConfig.Filter = $Filter
 
-$CodeCoverage = @{}
 if ($CodeCoverageOutputFile) {
-    $CodeCoverage['Enabled'] = $True
-    $CodeCoverage['OutputFormat'] = "JaCoCo"
+    $PesterConfig.CodeCoverage.Enabled = $True
+    $PesterConfig.CodeCoverage.OutputFormat = "JaCoCo"
 
     if (-not $PSBoundParameters.ContainsKey('CodeCoverageFolder')) {
         $CodeCoverageFolder = $TestFolder
     }
     $Files = Get-ChildItem -Path $CodeCoverageFolder -include *.ps1, *.psm1 -Exclude *.Tests.ps1 -Recurse |
-        Select-object -ExpandProperty Fullname
+    Select-object -ExpandProperty Fullname
 
     if ($Files) {
-        $CodeCoverage.Add('Path', $Files)
-        $CodeCoverage.Add('OutputPath', $CodeCoverageOutputFile)
+        $PesterConfig.CodeCoverage.Path = $Files
+        $PesterConfig.CodeCoverage.OutputPath = $CodeCoverageOutputFile
     }
-    else {
+    else {`
         Write-Warning -Message "No PowerShell files found under [$CodeCoverageFolder] to analyse for code coverage."
     }
 }
-
-$PesterConfig['CodeCoverage'] = $CodeCoverage
 
 if (-not([String]::IsNullOrWhiteSpace($ScriptBlock))) {
     $ScriptBlockObject = [ScriptBlock]::Create($ScriptBlock)
