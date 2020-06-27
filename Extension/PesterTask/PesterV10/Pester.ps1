@@ -119,13 +119,13 @@ if ($CodeCoverageOutputFile) {
         $CodeCoverageFolder = $TestFolder
     }
     $Files = Get-ChildItem -Path $CodeCoverageFolder -include *.ps1, *.psm1 -Exclude *.Tests.ps1 -Recurse |
-    Select-object -ExpandProperty Fullname
+        Select-object -ExpandProperty Fullname
 
     if ($Files) {
         $PesterConfig.CodeCoverage.Path = $Files
         $PesterConfig.CodeCoverage.OutputPath = $CodeCoverageOutputFile
     }
-    else {`
+    else {
         Write-Warning -Message "No PowerShell files found under [$CodeCoverageFolder] to analyse for code coverage."
     }
 }
