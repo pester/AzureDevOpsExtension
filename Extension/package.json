@@ -16,7 +16,7 @@
     "fs": "0.0.1-security",
     "ncp": "^2.0.0",
     "rimraf": "^2.6.2",
-    "vsts-task-lib": "^2.7.0"
+    "azure-pipelines-task-lib": "^2.9.6"
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
