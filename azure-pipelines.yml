@@ -1,5 +1,10 @@
 name: $(major).$(minor).$(rev:r)
 
+trigger:
+  branches:
+    exclude:
+      - master
+
 stages:
   - stage: build
     displayName: Build VSIX
