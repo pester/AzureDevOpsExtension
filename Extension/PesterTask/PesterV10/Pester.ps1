@@ -138,6 +138,6 @@ if (-not([String]::IsNullOrWhiteSpace($ScriptBlock))) {
 
 $result = Invoke-Pester -Configuration  ([PesterConfiguration]$PesterConfig)
 
-if ($Result.FailedCount -gt 0) {
+if ($Result.Failed.Count -gt 0) {
     Write-Error "Pester Failed at least one test. Please see results for details."
 }
