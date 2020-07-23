@@ -48,7 +48,7 @@ function Import-Pester {
             if ($Version -eq "latest") {
                 $NewestPester = Find-Module -Name Pester -MaximumVersion 4.99.99 -ErrorAction Stop | Sort-Object Version -Descending | Select-Object -First 1
 
-                If ((Get-Module Pester -ListAvailable | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
+                If ((Get-Module Pester -ListAvailable | Where-Object Version -lt '5.0.0' | Sort-Object Version -Descending| Select-Object -First 1).Version -lt $NewestPester.Version) {
                     Install-Module -Name Pester -RequiredVersion $NewestPester.Version -Scope CurrentUser -Force -Repository $NewestPester.Repository -SkipPublisherCheck
                 }
             }
