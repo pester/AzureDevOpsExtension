@@ -131,6 +131,9 @@ if ($CodeCoverageOutputFile) {
 }
 
 if (-not([String]::IsNullOrWhiteSpace($ScriptBlock))) {
+    if (Test-Path $ScriptBlock) {
+        $ScriptBlock = Get-Content -Path $ScriptBlock -Raw
+    }
     $ScriptBlockObject = [ScriptBlock]::Create($ScriptBlock)
 
     $ScriptBlockObject.Invoke()
