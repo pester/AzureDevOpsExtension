@@ -84,7 +84,7 @@ Write-Host "Running in $($env:Processor_Architecture) PowerShell"
 
 if ($PSBoundParameters.ContainsKey('additionalModulePath')) {
     Write-Host "Adding additional module path [$additionalModulePath] to `$env:PSModulePath"
-    $env:PSModulePath = $additionalModulePath + ';' + $env:PSModulePath
+    $env:PSModulePath = $additionalModulePath + [System.IO.Path]::PathSeparator + $env:PSModulePath
 }
 $PesterConfig = [PesterConfiguration]::Default
 
