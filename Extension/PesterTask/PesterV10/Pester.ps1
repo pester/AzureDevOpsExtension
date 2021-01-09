@@ -40,13 +40,17 @@ param
 
     [string]$ScriptBlock,
 
-    [string]$TargetPesterVersion = "latest"
+    [string]$TargetPesterVersion = "latest",
+    
+    [string]$FailOnStdErr
 )
 
 if ($TargetPesterVersion -match '^4') {
     Write-Host "##vso[task.logissue type=error]This version of the task does not support Pester V4, please use task version 9."
     exit 1
 }
+
+$FailStdErr = [Boolean]::Parse($FailOnStdErr)
 
 Write-Host "TestFolder $TestFolder"
 Write-Host "resultsFile $resultsFile"
@@ -57,6 +61,7 @@ Write-Host "ExcludeTag $ExcludeTag"
 Write-Host "CodeCoverageOutputFile $CodeCoverageOutputFile"
 Write-Host "CodeCoverageFolder $CodeCoverageFolder"
 Write-Host "ScriptBlock $ScriptBlock"
+Write-Host "FailOnStdErr $FailOnStdErr"
 
 Import-Module -Name (Join-Path $PSScriptRoot "HelperModule.psm1") -Force
 Import-Pester -Version $TargetPesterVersion
@@ -142,7 +147,12 @@ if (-not([String]::IsNullOrWhiteSpace($ScriptBlock))) {
     $ScriptBlockObject.Invoke()
 }
 
-$result = Invoke-Pester -Configuration  ([PesterConfiguration]$PesterConfig)
+if ($FailStdErr) {
+    $result = Invoke-Pester -Configuration  ([PesterConfiguration]$PesterConfig)
+}
+else {
+    $result = Invoke-Pester -Configuration  ([PesterConfiguration]$PesterConfig) 2> $null
+}
 
 if ($Result.Failed.Count -gt 0) {
     Write-Error "Pester Failed at least one test. Please see results for details."

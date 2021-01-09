@@ -40,13 +40,18 @@ param
 
     [string]$ScriptBlock,
 
-    [string]$TargetPesterVersion = "latest"
+    [string]$TargetPesterVersion = "latest",
+    
+    [string]$FailOnStdErr
 )
 
 if ($TargetPesterVersion -match '^5') {
     Write-Host "##vso[task.logissue type=error]This version of the task does not support Pester V5, please use task version 10 or higher."
     exit 1
 }
+
+$FailStdErr = [Boolean]::Parse($FailOnStdErr)
+
 Write-Host "scriptFolder $scriptFolder"
 Write-Host "resultsFile $resultsFile"
 Write-Host "run32Bit $run32Bit"
@@ -56,6 +61,7 @@ Write-Host "ExcludeTag $ExcludeTag"
 Write-Host "CodeCoverageOutputFile $CodeCoverageOutputFile"
 Write-Host "CodeCoverageFolder $CodeCoverageFolder"
 Write-Host "ScriptBlock $ScriptBlock"
+Write-Host "FailOnStdErr $FailOnStdErr"
 
 Import-Module -Name (Join-Path $PSScriptRoot "HelperModule.psm1") -Force
 Import-Pester -Version $TargetPesterVersion
@@ -145,7 +151,12 @@ if (-not([String]::IsNullOrWhiteSpace($ScriptBlock))) {
     $ScriptBlockObject.Invoke()
 }
 
-$result = Invoke-Pester @Parameters
+if ($FailStdErr) {
+    $result = Invoke-Pester @Parameters
+}
+else {
+    $result = Invoke-Pester @Parameters 2> $null
+}
 
 if ($result.failedCount -ne 0) {
     Write-Error "Pester returned errors"

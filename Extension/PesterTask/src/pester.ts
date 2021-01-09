@@ -20,6 +20,7 @@ export async function run() {
         let CodeCoverageFolder = tl.getInput("CodeCoverageFolder");
         let ScriptBlock = tl.getInput("ScriptBlock");
         let PesterVersion = tl.getInput("PesterVersion");
+        let FailOnStdErr = tl.getInput("failOnStdErr");
 
         let TargetPesterVersion = "0.0.0";
         if (PesterVersion === "OtherVersion") {
@@ -48,6 +49,7 @@ export async function run() {
                     "-scriptFolder", scriptFolder,
                     "-resultsFile", resultsFile,
                     "-run32Bit", run32Bit,
+                    "-FailOnStdErr", FailOnStdErr,
                 ];
 
         if (additionalModulePath) {
