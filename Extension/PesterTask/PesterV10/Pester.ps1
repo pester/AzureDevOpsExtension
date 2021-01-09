@@ -61,6 +61,9 @@ Write-Host "ScriptBlock $ScriptBlock"
 Import-Module -Name (Join-Path $PSScriptRoot "HelperModule.psm1") -Force
 Import-Pester -Version $TargetPesterVersion
 
+# Enable use of TLS 1.2 and 1.3 along with whatever else is already enabled. If tests need to override it then they can do so within them or what they are testing.
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13
+
 if ($run32Bit -eq $true -and $env:Processor_Architecture -ne "x86") {
     Write-Warning "32bit support is considered deprecated in this version of the task and will be removed in a future major version."
     # Get the command parameters
