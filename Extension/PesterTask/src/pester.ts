@@ -92,7 +92,7 @@ export async function run() {
         logInfo(`${executable} ${args.join(" ")}`);
 
         var spawn = require("child_process").spawn, child;
-        child = spawn(executable, args);
+        child = spawn(executable, args, {windowsVerbatimArguments: true});
         child.stdout.on("data", function (data) {
             logInfo(data.toString());
         });
