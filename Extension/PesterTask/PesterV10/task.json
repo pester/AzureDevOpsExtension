@@ -145,6 +145,13 @@
       "required": false,
       "helpMarkDown": "A scriptblock to run before tests are executed. This will be run in the scope of the task where Invoke-Pester is run.",
       "groupName": "advanced"
+    },
+    {
+      "name": "failOnStdErr",
+      "type": "boolean",
+      "defaultValue": true,
+      "label": "Fail on StdErr",
+      "helpMarkDown": "Sets whether the task should fail on any output to StdErr from within the tests or not. Default true"
     }
    ],
   "instanceNameFormat": "Pester Test Runner",
