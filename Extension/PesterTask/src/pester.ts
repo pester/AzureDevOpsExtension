@@ -45,7 +45,7 @@ export async function run() {
         }
 
         // we need to not pass the null param
-        var args = [__dirname + "\\Pester.ps1",
+        var args = ['"' + __dirname + "\\Pester.ps1" + '"',
                     "-scriptFolder", scriptFolder,
                     "-resultsFile", resultsFile,
                     "-run32Bit", run32Bit,
