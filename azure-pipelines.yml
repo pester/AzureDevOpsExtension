@@ -81,6 +81,8 @@ stages:
     jobs:
       - deployment: validate
         displayName: Validate publish
+        pool:
+          vmImage: windows-latest
         environment: pester
         strategy:
           runOnce:
