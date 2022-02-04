@@ -45,7 +45,7 @@ export async function run() {
         }
 
         // we need to not pass the null param
-        var args = ['"' + __dirname + "\\Pester.ps1" + '"',
+        var args = [__dirname + "\\Pester.ps1",
                     "-scriptFolder", scriptFolder,
                     "-resultsFile", resultsFile,
                     "-run32Bit", run32Bit,
@@ -94,7 +94,7 @@ export async function run() {
         logInfo(`${executable} ${args.join(" ")}`);
 
         var spawn = require("child_process").spawn, child;
-        child = spawn(executable, args, {windowsVerbatimArguments: true});
+        child = spawn(executable, args);
         child.stdout.on("data", function (data) {
             logInfo(data.toString());
         });
